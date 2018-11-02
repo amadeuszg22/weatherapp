@@ -24,7 +24,9 @@ class host:
         status="n"
         temp ="0"
         hum ="0"
-
+	web = "urls"
+	city ="waw"
+	cityg ="Waw"
 
 
 class httpck():
@@ -66,6 +68,21 @@ class pagepars():
 			#print temp[2]
 		except(urllib2.URLError):
 			host.status="Down"
+
+class weatherc():
+	def __init__(self,):
+		for section_name in config.sections():
+                                #print 'Section:', section_name
+                                match = re.match(r"^Weather*", section_name)
+                                if match:
+                                        #for name, value in config.items(section_name):
+                                        host.web = config.get(section_name, 'web')
+                                        host.city = config.get(section_name, 'city')
+                                        h = httpck(host.web)
+					print host.status
+
+weatherc()
+
 
 class runapp():
 	def __init__(self,):
