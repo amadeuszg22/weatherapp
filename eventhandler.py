@@ -8,13 +8,23 @@ import exceptions
 import urllib2
 from bs4 import BeautifulSoup
 import sys
+import io
+import ConfigParser
+
+# Load the configuration file
+with open("config.ini") as f:
+    sample_config = f.read()
+config = ConfigParser.RawConfigParser(allow_no_value=True)
+config.readfp(io.BytesIO(sample_config))
 
 class host:
-	name="PL-WAW-URS-IN"
-	ip="192.168.0.225"
-	status="n"
-	temp ="0"
-	hum ="0"
+        name= config.get('Host_1', 'name')
+        ip= config.get('Host_1', 'ip')
+        status="n"
+        temp ="0"
+        hum ="0"
+
+
 
 class httpck():
 	def __init__(self,ip):
@@ -28,17 +38,16 @@ class httpck():
 				#print host.status
 			else:
 				host.status="Down"
-				
 		except(httplib.HTTPException, RuntimeError, TypeError, NameError, socket.error,
             		socket.gaierror):
 			host.status="Down"
 			print host.status
 
-class pagepars:
-	def __init__(self, ip):		
+class pagepars():
+	def __init__(self, ip):
 		try:
 			self.ip = ip
-	
+
 			self.page = urllib2.urlopen("http://"+ip+"/") #Getting target site 
 			self.soup = BeautifulSoup(self.page, features="html5lib") #Scrapeing downloaded page
 			self.findm = self.soup.find('title')	 #Parsing site to find desired paragrpah  that contains desired data
@@ -58,8 +67,15 @@ class pagepars:
 			host.status="Down"
 			print "Host Status:"
 			print host.status
+
+
+
+
+
 h = httpck(host.ip)
 cpagepars = pagepars(host.ip)
+
+
 host.temp  = cpagepars.temp[2]
 host.hum = cpagepars.hum[2]
 
