@@ -24,10 +24,15 @@ class host:
         status="n"
         temp ="0"
         hum ="0"
+	#Weather  channel data
 	web = "urls"
+	country = "pl"
 	city ="waw"
 	cityg ="Waw"
-
+	polingdate = "Date"
+	weater = "zachm"
+	channeltempn = "0"
+	channelwindn = "0"
 
 class httpck():
 	def __init__(self,ip):
@@ -77,9 +82,32 @@ class weatherc():
                                 if match:
                                         #for name, value in config.items(section_name):
                                         host.web = config.get(section_name, 'web')
-                                        host.city = config.get(section_name, 'city')
+                                        host.country = config.get(section_name, 'country')
+					host.city = config.get(section_name, 'city')
+					host.cityg = config.get(section_name, 'cityg')
                                         h = httpck(host.web)
-					print host.status
+					#print host.status
+					self.page = urllib2.urlopen("http://"+host.web+"/"+host.country+"/"+host.city+"_"+host.cityg+"/") #Getting target site 
+                        		self.soup = BeautifulSoup(self.page, features="html.parser") #Scrapeing downloaded page
+					self.findm = self.soup.find('tr', attrs={'class':'k2'})
+					self.dateraw = self.findm.find('td', attrs={'height':'64', 'width':'156'})
+					self.date = self.dateraw.text.strip() 
+					print self.date
+				    	host.polingdate = self.date 
+					self.weatherraw = self.findm.find('div', attrs={'id':'ico_now_under'})
+					self.weather = self.weatherraw.text.strip()
+					print self.weather
+					host.weater = self.weather
+					self.channeltr = self.findm.find_all('td')
+					self.channelr = self.channeltr[2]
+					self.channelra = self.channelr.text.strip()
+					host.channeltempn = self.channelra[0:2]
+					print host.channeltempn
+					self.windt = self.channeltr[3]
+					self.windte = self.windt.text.strip()
+					self.windtem = self.windte.partition(' ')
+					print self.windtem[0]
+
 
 weatherc()
 
@@ -113,5 +141,5 @@ class runapp():
 					except(AttributeError):
 							print "Host Down"
 
-runapp()
+#runapp()
 
