@@ -101,8 +101,9 @@ class weatherc():
 					self.channeltr = self.findm.find_all('td')
 					self.channelr = self.channeltr[2]
 					self.channelra = self.channelr.text.strip()
-					host.channeltempn = self.channelra[0:2]
-					print host.channeltempn
+					self.channelraw = re.findall(r'[-\d]+', self.channelra)
+					host.channeltempn = self.channelraw[0]
+					print self.channelraw[0]
 					self.windt = self.channeltr[3]
 					self.windte = self.windt.text.strip()
 					self.windtem = self.windte.partition(' ')
@@ -141,5 +142,5 @@ class runapp():
 					except(AttributeError):
 							print "Host Down"
 
-#runapp()
+runapp()
 
