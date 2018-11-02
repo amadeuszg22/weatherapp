@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 import sys
 import io
 import ConfigParser
+import re
 
 # Load the configuration file
 with open("config.ini") as f:
@@ -18,8 +19,8 @@ config = ConfigParser.RawConfigParser(allow_no_value=True)
 config.readfp(io.BytesIO(sample_config))
 
 class host:
-        name= config.get('Host_1', 'name')
-        ip= config.get('Host_1', 'ip')
+        name= config.get('Host1', 'name')
+        ip= config.get('Host1', 'ip')
         status="n"
         temp ="0"
         hum ="0"
@@ -65,30 +66,35 @@ class pagepars():
 			#print temp[2]
 		except(urllib2.URLError):
 			host.status="Down"
-			print "Host Status:"
-			print host.status
 
+class runapp():
+	def __init__(self,):
+		#try:
+			for section_name in config.sections():
+    				#print 'Section:', section_name
+    				match = re.match(r"^Host*", section_name)
+				if match:
+    					#for name, value in config.items(section_name):
+					host.name = config.get(section_name, 'name')
+					host.ip = config.get(section_name, 'ip')
+					h = httpck(host.ip)
+					try:
+						cpagepars = pagepars(host.ip)
+						host.temp  = cpagepars.temp[2]
+						host.hum = cpagepars.hum[2]
+					except(AttributeError):
+						print "Host Down"
+					
+					print host.name+":"+host.ip+" "+"Host Status:"+host.status #" "+"http status:", httpck.res.status, httpck.res.reason #Diagnostic and status echos
+					try:
+							print "Host HTTP Service status:"
+							print h.res.status, h.res.reason
+							print "ESP Message:" 
+							print cpagepars.msg
+							print cpagepars.desc
+							print cpagepars.data
+					except(AttributeError):
+							print "Host Down"
 
-
-
-
-h = httpck(host.ip)
-cpagepars = pagepars(host.ip)
-
-
-host.temp  = cpagepars.temp[2]
-host.hum = cpagepars.hum[2]
-
-
-print host.name+":"+host.ip+" "+"Host Status:"+host.status #" "+"http status:", httpck.res.status, httpck.res.reason #Diagnostic and status echos
-try:
-	print "Host HTTP Service status:"
-	print h.res.status, h.res.reason
-except(AttributeError):
-	print "N/A" 
-print "ESP Message:" 
-print cpagepars.msg
-print cpagepars.desc
-print cpagepars.data
-
+runapp()
 
