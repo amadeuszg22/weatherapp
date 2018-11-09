@@ -118,6 +118,9 @@ class weatherc():
 										self.ftemp = re.findall(r'[-\d]+', self.ftempte)
 										host.channeltempf = self.ftemp[0]
 										print (host.channeltempf+" C")
+										self.press = self.soup.find_all('div', attrs={'class':'autodin'})
+										print re.findall(r'[-\d]+', self.press[2].text.strip())[0]
+
 
 weatherc()
 
