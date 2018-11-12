@@ -65,13 +65,11 @@ class pagepars():
 			self.desc = self.finddesc.text.strip()   #Stirping data to get description
 			self.finddata = self.soup.find('pre')   #Parsing site to find desired paragrpah  that contains desired data
 			self.data = self.finddata.text.strip() #Stirping data to get temperature and humidity Data
-			self.sdata = self.data.splitlines()   #Data variable comes as multiline string, command convers multiline string to the list 
-			self.humraw = self.sdata[0]           #Position 0 on the list represents humidity with value  we are saveing it to var for partition
-			self.hum = self.humraw.partition(': ') #Variable partition to get onlty humidtity value  without description
-			#print hum[2]			#Diagnostic echo representing humidity value
-			self.tempraw = self.sdata[1]		#same as above
-			self.temp = self.tempraw.partition(': ')
-			#print temp[2]
+			self.sdata = self.data.splitlines()   #Data variable comes as multiline string, command convers multiline string to the list
+			self.hum = self.sdata[0].partition(': ')           #Position 0 on the list represents humidity with value  we are saveing it to var for partition
+			print self.hum[2]			#Diagnostic echo representing humidity value
+			self.temp = self.sdata[1].partition(': ')		#same as above
+			print self.temp[2]
 		except(urllib2.URLError):
 			host.status="Down"
 
@@ -92,34 +90,26 @@ class weatherc():
 										self.page = urllib2.urlopen("http://"+host.web+"/"+host.country+"/"+host.city+"_"+host.cityg+"/") #Getting target site
 										self.soup = BeautifulSoup(self.page, features="html.parser") #Scrapeing downloaded page
 										self.findm = self.soup.find('tr', attrs={'class':'k2'})
-										self.dateraw = self.findm.find('td', attrs={'height':'64', 'width':'156'})
-										self.date = self.dateraw.text.strip()
+										self.date = self.findm.find('td', attrs={'height':'64', 'width':'156'}).text.strip()
 										print self.date
 										host.polingdate = self.date
-										self.weatherraw = self.findm.find('div', attrs={'id':'ico_now_under'})
-										self.weather = self.weatherraw.text.strip()
+										self.weather = self.findm.find('div', attrs={'id':'ico_now_under'}).text.strip()
 										print self.weather
 										host.weater = self.weather
 										self.channeltr = self.findm.find_all('td')
-										self.channelr = self.channeltr[2]
-										self.channelra = self.channelr.text.strip()
-										self.channelraw = re.findall(r'[-\d]+', self.channelra)
-										host.channeltempn = self.channelraw[0]
-										print (self.channelraw[0]+ " C")
-										self.windt = self.channeltr[3]
-										self.windte = self.windt.text.strip()
-										self.windtem = self.windte.partition(' ')
-										print (self.windtem[0]+ " m/s")
-										self.fdtr = self.soup.find('div', attrs={'class': 'czas now'})
-										self.ftd = self.fdtr.text.strip()
-										print self.ftd
+										self.channelr = re.findall(r'[-\d]+', self.channeltr[2].text.strip())[0]#find all digits to find temperature and delete the html tags
+										host.channeltempn = self.channelr
+										print (self.channelr+ " C")
+										self.windt = self.channeltr[3].text.strip().partition(' ')#strip and partition data to get wind temperature
+										print (self.windt[0]+ " m/s")
+										self.fdtr = self.soup.find('div', attrs={'class': 'czas now'}).text.strip()#find predicted hour equal to OSMO model
+										print self.fdtr
 										self.ftempt = self.soup.find('div', attrs={'class': 'autodin'})
-										self.ftempte  = self.ftempt.text.strip()
-										self.ftemp = re.findall(r'[-\d]+', self.ftempte)
-										host.channeltempf = self.ftemp[0]
+										host.channeltempf = re.findall(r'[-\d]+', self.ftempt.text.strip())[0] #Find digit then select itme 0 from the list and delete html tags
 										print (host.channeltempf+" C")
 										self.press = self.soup.find_all('div', attrs={'class':'autodin'})
-										print re.findall(r'[-\d]+', self.press[2].text.strip())[0]
+										print re.findall(r'[-\d]+', self.press[2].text.strip())[0] #Find all digits then select item number 2 from the list and delete html tags then print
+
 
 
 weatherc()
