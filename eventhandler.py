@@ -7,7 +7,7 @@ import socket
 import exceptions
 import urllib2
 from bs4 import BeautifulSoup
-import sys
+import json
 import io
 import ConfigParser
 import re
@@ -34,6 +34,11 @@ class host:
 		channeltempn = "0"
 		channelwindn = "0"
 		channeltempf = "0"
+		channelpress = "0"
+		channelwidp = "0"
+class server():
+	address = config.get('Serv','ip')
+	port = config.get('Serv','port')
 
 class httpck():
 	def __init__(self,ip):
@@ -51,7 +56,12 @@ class httpck():
 					socket.gaierror):
 			host.status="Down"
 			print host.status
+#class apicon():
+#	def __init__(self,):
+#		self.conn = json.load(urllib2.urlopen("http://"+server.address+":"+server.port+"/API/chanellist"))
+#		print(self.conn)
 
+apicon()
 class pagepars():
 	def __init__(self, ip):
 		try:
@@ -91,6 +101,7 @@ class weatherc():
 										self.soup = BeautifulSoup(self.page, features="html.parser") #Scrapeing downloaded page
 										self.findm = self.soup.find('tr', attrs={'class':'k2'})
 										self.date = self.findm.find('td', attrs={'height':'64', 'width':'156'}).text.strip()
+										print (host.city)
 										print self.date
 										host.polingdate = self.date
 										self.weather = self.findm.find('div', attrs={'id':'ico_now_under'}).text.strip()
@@ -108,9 +119,10 @@ class weatherc():
 										host.channeltempf = re.findall(r'[-\d]+', self.ftempt.text.strip())[0] #Find digit then select itme 0 from the list and delete html tags
 										print (host.channeltempf+" C")
 										self.press = self.soup.find_all('div', attrs={'class':'autodin'})
-										print re.findall(r'[-\d]+', self.press[2].text.strip())[0] #Find all digits then select item number 2 from the list and delete html tags then print
-
-
+										host.channelpress = re.findall(r'[-\d]+', self.press[2].text.strip())[0] #Find all digits then select item number 2 from the list and delete html tags then print
+										print (host.channelpress+ " hPa")
+										host.channelwidp = re.findall(r'[-\d]+', self.press[3].text.strip())[0]
+										print (host.channelwidp + " m/s")
 
 weatherc()
 
@@ -147,5 +159,5 @@ class runapp():
 
 
 
-runapp()
+#runapp()
 
