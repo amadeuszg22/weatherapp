@@ -56,10 +56,10 @@ class httpck():
 					socket.gaierror):
 			host.status="Down"
 			print host.status
-#class apicon():
-#	def __init__(self,):
-#		self.conn = json.load(urllib2.urlopen("http://"+server.address+":"+server.port+"/API/chanellist"))
-#		print(self.conn)
+class apicon():
+	def __init__(self,):
+		self.conn = json.load(urllib2.urlopen("http://"+server.address+":"+server.port+"/API/chanellist"))
+		print(self.conn)
 
 apicon()
 class pagepars():
