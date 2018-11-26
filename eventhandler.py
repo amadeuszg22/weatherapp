@@ -41,11 +41,7 @@ class server():
 	address = config.get('Serv','ip')
 	port = config.get('Serv','port')
 
-conect = json.loads(urllib2.urlopen("http://" + server.address + ":" + server.port + "/API/devlist?format=json").read())
-#print (conect['results'][0][''])
-for con in conect['results']:
-	host.name = con['name']
-	host.ip = con['ip']
+
 
 class httpck():
 	def __init__(self,ip):
@@ -130,32 +126,30 @@ weatherc()
 class runapp():
 	def __init__(self,):
 		#try:
-			for section_name in config.sections():
-					#print 'Section:', section_name
-				match = re.match(r"^Host*", section_name)
-				if match:
-						#for name, value in config.items(section_name):
-						host.name = config.get(section_name, 'name')
-						host.ip = config.get(section_name, 'ip')
-						h = httpck(host.ip)
-						try:
-							cpagepars = pagepars(host.ip)
-							host.temp  = cpagepars.temp[2]
-							host.hum = cpagepars.hum[2]
-						except(AttributeError):
-							print "Host Down"
+		self.conect = json.loads(urllib2.urlopen("http://" + server.address + ":" + server.port + "/API/devlist?format=json").read())
+		# print (conect['results'][0][''])
+		for con in self.conect['results']:
+			host.name = con['name']
+			host.ip = con['ip']
+			h = httpck(host.ip)
+			try:
+				cpagepars = pagepars(host.ip)
+				host.temp  = cpagepars.temp[2]
+				host.hum = cpagepars.hum[2]
+			except(AttributeError):
+				print "Host Down"
 
-						print host.name + ":" + host.ip + " " + "Host Status:" + host.status
+			print host.name + ":" + host.ip + " " + "Host Status:" + host.status
 
-						try:
-							print("Host HTTP Service status:")
-							print h.res.status, h.res.reason
-							print "ESP Message:"
-							print cpagepars.msg
-							print cpagepars.desc
-							print cpagepars.data
-						except(AttributeError):
-							print "Host Down"
+			try:
+				print("Host HTTP Service status:")
+				print h.res.status, h.res.reason
+				print "ESP Message:"
+				print cpagepars.msg
+				print cpagepars.desc
+				print cpagepars.data
+			except(AttributeError):
+				print "Host Down"
 
 
 
