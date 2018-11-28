@@ -1,10 +1,7 @@
 #!/usr/bin/python
 
-
-import httplib2
 import httplib
 import socket
-import exceptions
 import urllib2
 from bs4 import BeautifulSoup
 import json
@@ -83,8 +80,11 @@ class pagepars():
 class weatherc():
 
 	def __init__(self,):
-		self.conn = json.loads(urllib2.urlopen("http://" + server.address + ":" + server.port + "/API/chanellist?format=json").read())
+		try:
+			self.conn = json.loads(urllib2.urlopen("http://" + server.address + ":" + server.port + "/API/chanellist?format=json").read())
 		#print (self.conn['results'][1]['city'])
+		except(urllib2.URLError):
+			print("Connection refused")
 		for con in self.conn['results']:
 			host.web = con['web']
 			print(host.web)
@@ -93,64 +93,67 @@ class weatherc():
 			host.cityg = con['cityg']
 			h = httpck(host.web)
 			#print host.status
-			self.page = urllib2.urlopen("http://"+host.web+"/"+host.country+"/"+host.city+"_"+host.cityg+"/") #Getting target site
-			self.soup = BeautifulSoup(self.page, features="html.parser") #Scrapeing downloaded page
-			self.findm = self.soup.find('tr', attrs={'class':'k2'})
-			self.date = self.findm.find('td', attrs={'height':'64', 'width':'156'}).text.strip()
-			print (host.city)
-			print self.date
-			host.polingdate = self.date
-			self.weather = self.findm.find('div', attrs={'id':'ico_now_under'}).text.strip()
-			print self.weather
-			host.weater = self.weather
-			self.channeltr = self.findm.find_all('td')
-			self.channelr = re.findall(r'[-\d]+', self.channeltr[2].text.strip())[0]#find all digits to find temperature and delete the html tags
-			host.channeltempn = self.channelr
-			print (self.channelr+ " C")
-			self.windt = self.channeltr[3].text.strip().partition(' ')#strip and partition data to get wind temperature
-			print (self.windt[0]+ " m/s")
-			self.fdtr = self.soup.find('div', attrs={'class': 'czas now'}).text.strip()#find predicted hour equal to OSMO model
-			print self.fdtr
-			self.ftempt = self.soup.find('div', attrs={'class': 'autodin'})
-			host.channeltempf = re.findall(r'[-\d]+', self.ftempt.text.strip())[0] #Find digit then select itme 0 from the list and delete html tags
-			print (host.channeltempf+" C")
-			self.press = self.soup.find_all('div', attrs={'class':'autodin'})
-			host.channelpress = re.findall(r'[-\d]+', self.press[2].text.strip())[0] #Find all digits then select item number 2 from the list and delete html tags then print
-			print (host.channelpress+ " hPa")
-			host.channelwidp = re.findall(r'[-\d]+', self.press[3].text.strip())[0]
-			print (host.channelwidp + " m/s")
-
+			try:
+				self.page = urllib2.urlopen("http://"+host.web+"/"+host.country+"/"+host.city+"_"+host.cityg+"/") #Getting target site
+				self.soup = BeautifulSoup(self.page, features="html.parser") #Scrapeing downloaded page
+				self.findm = self.soup.find('tr', attrs={'class':'k2'})
+				self.date = self.findm.find('td', attrs={'height':'64', 'width':'156'}).text.strip()
+				print (host.city)
+				print self.date
+				host.polingdate = self.date
+				self.weather = self.findm.find('div', attrs={'id':'ico_now_under'}).text.strip()
+				print self.weather
+				host.weater = self.weather
+				self.channeltr = self.findm.find_all('td')
+				self.channelr = re.findall(r'[-\d]+', self.channeltr[2].text.strip())[0]#find all digits to find temperature and delete the html tags
+				host.channeltempn = self.channelr
+				print (self.channelr+ " C")
+				self.windt = self.channeltr[3].text.strip().partition(' ')#strip and partition data to get wind temperature
+				print (self.windt[0]+ " m/s")
+				self.fdtr = self.soup.find('div', attrs={'class': 'czas now'}).text.strip()#find predicted hour equal to OSMO model
+				print self.fdtr
+				self.ftempt = self.soup.find('div', attrs={'class': 'autodin'})
+				host.channeltempf = re.findall(r'[-\d]+', self.ftempt.text.strip())[0] #Find digit then select itme 0 from the list and delete html tags
+				print (host.channeltempf+" C")
+				self.press = self.soup.find_all('div', attrs={'class':'autodin'})
+				host.channelpress = re.findall(r'[-\d]+', self.press[2].text.strip())[0] #Find all digits then select item number 2 from the list and delete html tags then print
+				print (host.channelpress+ " hPa")
+				host.channelwidp = re.findall(r'[-\d]+', self.press[3].text.strip())[0]
+				print (host.channelwidp + " m/s")
+			except(urllib2.URLError):
+				print("Connection refused")
 weatherc()
 
 
 class runapp():
 	def __init__(self,):
-		#try:
-		self.conect = json.loads(urllib2.urlopen("http://" + server.address + ":" + server.port + "/API/devlist?format=json").read())
-		# print (conect['results'][0][''])
-		for con in self.conect['results']:
-			host.name = con['name']
-			host.ip = con['ip']
-			h = httpck(host.ip)
-			try:
-				cpagepars = pagepars(host.ip)
-				host.temp  = cpagepars.temp[2]
-				host.hum = cpagepars.hum[2]
-			except(AttributeError):
-				print "Host Down"
+		try:
+			self.conect = json.loads(urllib2.urlopen("http://" + server.address + ":" + server.port + "/API/devlist?format=json").read())
+			# print (conect['results'][0][''])
+			for con in self.conect['results']:
+				host.name = con['name']
+				host.ip = con['ip']
+				h = httpck(host.ip)
+				try:
+					cpagepars = pagepars(host.ip)
+					host.temp  = cpagepars.temp[2]
+					host.hum = cpagepars.hum[2]
+				except(AttributeError):
+					print "Host Down"
 
-			print host.name + ":" + host.ip + " " + "Host Status:" + host.status
+				print host.name + ":" + host.ip + " " + "Host Status:" + host.status
 
-			try:
-				print("Host HTTP Service status:")
-				print h.res.status, h.res.reason
-				print "ESP Message:"
-				print cpagepars.msg
-				print cpagepars.desc
-				print cpagepars.data
-			except(AttributeError):
-				print "Host Down"
-
+				try:
+					print("Host HTTP Service status:")
+					print h.res.status, h.res.reason
+					print "ESP Message:"
+					print cpagepars.msg
+					print cpagepars.desc
+					print cpagepars.data
+				except(AttributeError):
+					print "Host Down"
+		except(urllib2.URLError):
+			print("Connection refused")
 
 
 runapp()
