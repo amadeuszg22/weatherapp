@@ -116,7 +116,7 @@ class weatherc():
 				print (self.icolinkwindn)
 				self.fdtr = self.soup.find('div', attrs={'class': 'czas now'}).text.strip()#find predicted hour equal to OSMO model
 				print self.fdtr
-				print (self.soup.find('div', attrs={'id': 'auto_now_icon'}))
+				#print (self.soup.find('div', attrs={'class': 'teraz'}))
 				self.ftempt = self.soup.find('div', attrs={'class': 'autodin'})
 				host.channeltempf = re.findall(r'[-\d]+', self.ftempt.text.strip())[0] #Find digit then select itme 0 from the list and delete html tags
 				print (host.channeltempf+" C")
@@ -125,6 +125,7 @@ class weatherc():
 				print (host.channelpress+ " hPa")
 				host.channelwidp = re.findall(r'[-\d]+', self.press[3].text.strip())[0]
 				print (host.channelwidp + " m/s")
+
 			except(urllib2.URLError):
 				print("Connection refused")
 weatherc()
