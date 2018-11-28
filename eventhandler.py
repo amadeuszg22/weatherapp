@@ -101,6 +101,8 @@ class weatherc():
 				print (host.city)
 				print self.date
 				host.polingdate = self.date
+				self.icolink = self.findm.find('img', attrs={'id':'ico_now'})['src'] #Scrapeing icon for current weather
+				print(self.icolink)
 				self.weather = self.findm.find('div', attrs={'id':'ico_now_under'}).text.strip()
 				print self.weather
 				host.weater = self.weather
@@ -110,8 +112,11 @@ class weatherc():
 				print (self.channelr+ " C")
 				self.windt = self.channeltr[3].text.strip().partition(' ')#strip and partition data to get wind temperature
 				print (self.windt[0]+ " m/s")
+				self.icolinkwindn = "http://"+host.web+self.channeltr[3].find('img')['src']
+				print (self.icolinkwindn)
 				self.fdtr = self.soup.find('div', attrs={'class': 'czas now'}).text.strip()#find predicted hour equal to OSMO model
 				print self.fdtr
+				print (self.soup.find('div', attrs={'id': 'auto_now_icon'}))
 				self.ftempt = self.soup.find('div', attrs={'class': 'autodin'})
 				host.channeltempf = re.findall(r'[-\d]+', self.ftempt.text.strip())[0] #Find digit then select itme 0 from the list and delete html tags
 				print (host.channeltempf+" C")
