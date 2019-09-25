@@ -2,12 +2,14 @@
 
 import httplib
 import socket
-import urllib2
+import urllib2,urllib
 from bs4 import BeautifulSoup
 import json
 import io
 import ConfigParser
 import re
+import time
+import requests
 
 # Load the configuration file
 with open("config.ini") as f:
@@ -33,6 +35,7 @@ class host:
 		channeltempf = "0"
 		channelpress = "0"
 		channelwidp = "0"
+		time = time.strftime("%Y-%m-%dT%H:%M:%S")
 
 class server():
 	address = config.get('Serv','ip')
@@ -125,10 +128,16 @@ class weatherc():
 				print (host.channelpress+ " hPa")
 				host.channelwidp = re.findall(r'[-\d]+', self.press[3].text.strip())[0]
 				print (host.channelwidp + " m/s")
-
+				self.url = "http://"+server.address+":"+server.port+"/API/wctempl?format=json"
+				self.headers = {'Content-type': 'application/json'}
+				self.post = '{"weatherc":"'+str(host.web)+'","city": "'+str(host.city)+'","weatherico":"'+str(self.icolink)+'","weatherinfo":"'+str((self.weather).encode('utf-8'))+'","wctemp": "'+str(self.channelr)+'","winds":"'+str(self.windt[0])+'","windsico": "'+str(self.icolinkwindn)+'","created_date" : "'+str(host.time)+'"}'
+				print (self.url)
+				#self.data = json.dumps(self.post)
+				print self.post
+				self.r =requests.post('http://shome.iamg.pl/API/wctempl?format=json', data=self.post, headers = self.headers)
+				print (self.r.json())
 			except(urllib2.URLError):
 				print("Connection refused")
-weatherc()
 
 
 class runapp():
@@ -162,5 +171,5 @@ class runapp():
 			print("Connection refused")
 
 
-runapp()
-
+#runapp()
+weatherc()
