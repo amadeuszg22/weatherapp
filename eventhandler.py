@@ -172,4 +172,6 @@ class runapp():
 
 
 #runapp()
-weatherc()
+while True:
+	weatherc()
+	time.sleep(1800)
