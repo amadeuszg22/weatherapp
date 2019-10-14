@@ -10,6 +10,7 @@ import ConfigParser
 import re
 import time
 import requests
+import gc
 
 # Load the configuration file
 with open("config.ini") as f:
@@ -128,6 +129,7 @@ class weatherc():
 				print (host.channelpress+ " hPa")
 				host.channelwidp = re.findall(r'[-\d]+', self.press[3].text.strip())[0]
 				print (host.channelwidp + " m/s")
+				host.time = time.strftime("%Y-%m-%dT%H:%M:%S")
 				self.url = "http://"+server.address+":"+server.port+"/API/wctempl?format=json"
 				self.headers = {'Content-type': 'application/json'}
 				self.post = '{"weatherc":"'+str(host.web)+'","city": "'+str(host.city)+'","weatherico":"'+str(self.icolink)+'","weatherinfo":"'+str((self.weather).encode('utf-8'))+'","wctemp": "'+str(self.channelr)+'","winds":"'+str(self.windt[0])+'","windsico": "'+str(self.icolinkwindn)+'","created_date" : "'+str(host.time)+'"}'
@@ -136,7 +138,7 @@ class weatherc():
 				print self.post
 				self.r =requests.post('http://shome.iamg.pl/API/wctempl?format=json', data=self.post, headers = self.headers)
 				print (self.r.json())
-			except(urllib2.URLError):
+			except(urllib2.URLError,AttributeError):
 				print("Connection refused")
 
 
@@ -174,4 +176,5 @@ class runapp():
 #runapp()
 while True:
 	weatherc()
+	gc.collect()
 	time.sleep(1800)
