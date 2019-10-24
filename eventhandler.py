@@ -118,6 +118,7 @@ class weatherc():
 				print (self.windt[0]+ " m/s")
 				self.icolinkwindn = "http://"+host.web+self.channeltr[3].find('img')['src']
 				print (self.icolinkwindn)
+				
 				self.fdtr = self.soup.find('div', attrs={'class': 'czas now'}).text.strip()#find predicted hour equal to OSMO model
 				print self.fdtr
 				#print (self.soup.find('div', attrs={'class': 'teraz'}))
@@ -129,15 +130,19 @@ class weatherc():
 				print (host.channelpress+ " hPa")
 				host.channelwidp = re.findall(r'[-\d]+', self.press[3].text.strip())[0]
 				print (host.channelwidp + " m/s")
-				host.time = time.strftime("%Y-%m-%dT%H:%M:%S")
+				
+				host.time = time.strftime("%Y-%m-%dT%H:%M:%S")				
 				self.url = "http://"+server.address+":"+server.port+"/API/wctempl?format=json"
 				self.headers = {'Content-type': 'application/json'}
 				self.post = '{"weatherc":"'+str(host.web)+'","city": "'+str(host.city)+'","weatherico":"'+str(self.icolink)+'","weatherinfo":"'+str((self.weather).encode('utf-8'))+'","wctemp": "'+str(self.channelr)+'","winds":"'+str(self.windt[0])+'","windsico": "'+str(self.icolinkwindn)+'","created_date" : "'+str(host.time)+'"}'
+				self.post_fork = '{"weatherc":"'+str(host.web)+'","city": "'+str(host.city)+'","weatherico":"'+str(self.icolink)+'","forecastime":"'+str((self.fdtr).encode('utf-8'))+'","wctemp": "'+str(host.channeltempf)+'","fcastpress": "'+str(host.channelpress)+'","winds":"'+str(host.channelwidp)+'","windsico": "'+str(self.icolinkwindn)+'","created_date" : "'+str(host.time)+'"}'
 				print (self.url)
 				#self.data = json.dumps(self.post)
 				print self.post
 				self.r =requests.post('http://shome.iamg.pl/API/wctempl?format=json', data=self.post, headers = self.headers)
 				print (self.r.json())
+				self.r_fork=requests.post('http://shome.iamg.pl/API/wcforcast?format=json', data=self.post_fork, headers = self.headers)
+				print (self.r_fork.json())
 			except(urllib2.URLError,AttributeError):
 				print("Connection refused")
 
